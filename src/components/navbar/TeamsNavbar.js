@@ -1,6 +1,7 @@
 import React from "react";
 import logo from "../../assets/images/logo.svg";
 import Avatar from "./Avatar";
+import Logout from "./Logout";
 import ProjectNavLink from "./navlinks/ProjectNavLink";
 import TeamsNavLink from "./navlinks/TeamsNavLink";
 
@@ -12,7 +13,8 @@ const TeamsNavbar = () => {
         <ProjectNavLink/>
         <TeamsNavLink/>
       </div>
-      <Avatar/>
+      <Avatar />
+      <Logout/>
     </div>
   );
 };

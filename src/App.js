@@ -3,7 +3,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
 import useAuthCheck from "./hooks/useAuthCheck";
 import Login from "./pages/Login";
-import Projects from "./pages/Projects";
+import ProjectsPage from "./pages/Projects";
 import Register from "./pages/Register";
 import TeamsPage from "./pages/Teams";
 
@@ -43,7 +43,7 @@ function App() {
           path="/projects"
           element={
             <PrivateRoute>
-              <Projects />
+              <ProjectsPage />
             </PrivateRoute>
           }
         />

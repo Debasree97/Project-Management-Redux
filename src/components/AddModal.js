@@ -5,29 +5,45 @@ import { useSelector } from "react-redux";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
 import makeAnimated from "react-select/animated";
-import { useAddTeamMutation } from "../../features/teams/teamsApi";
-import { useGetUsersQuery } from "../../features/users/usersApi";
-import { deptOptions } from "../../utils/deptOptions";
-import Error from "../ui/Error";
+import { useAddTeamMutation } from "../features/teams/teamsApi";
+import { useGetUsersQuery } from "../features/users/usersApi";
+import { deptOptions } from "../utils/deptOptions";
+import Error from "./ui/Error";
+import { useAddProjectMutation } from "../features/projects/projectApi";
 
-const AddTeamModal = ({ open, control }) => {
+const AddModal = ({ open, control, endpoint }) => {
   const [title, setTitle] = useState("");
   const [dept, setDept] = useState({});
   const [addMember, setAddMember] = useState([]);
 
   const { user: loggedInUser } = useSelector((state) => state.auth) || {};
-  const { email: myEmail } = loggedInUser || {};
+  const { email: myEmail, name } = loggedInUser || {};
 
-  const [addTeam, { isSuccess, isError, error }] = useAddTeamMutation();
+  const [
+    addTeam,
+    {
+      isSuccess: isTeamSuccess,
+      isError: isTeamError,
+      isLoading: isTeamLoading,
+    },
+  ] = useAddTeamMutation();
+  const [
+    addProject,
+    {
+      isSuccess: isProjectSuccess,
+      isError: isProjectError,
+      isLoading: isProjectLoading,
+    },
+  ] = useAddProjectMutation();
 
   const { data: users } = useGetUsersQuery();
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isTeamSuccess || isProjectSuccess) {
       control();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess]);
+  }, [isTeamSuccess, isProjectSuccess]);
 
   // React-Select
 
@@ -68,27 +84,26 @@ const AddTeamModal = ({ open, control }) => {
 
   // React-Select for Members end
 
-  // submit function
-  const handleSubmit = (e) => {
+  // submit functions
+
+  // submit to teams db
+  const handleTeamSubmit = (e) => {
     e.preventDefault();
 
-    // teamMembers calculation
+    // creator info modification
     const newLoggedInUser = Object.assign({
       ...loggedInUser,
       value: loggedInUser.name.toLowerCase(),
       label: loggedInUser.name,
     });
 
-    let assignedTeam = "";
-    if (addMember !== []) {
-      let team = "";
-      setAddMember(addMember?.push(newLoggedInUser));
-      addMember.map((member) => (team += member.email + "-"));
-      assignedTeam = team.slice(0, assignedTeam.length - 1);
-    }
+    // url query calculation
+    let team = "";
+    setAddMember(addMember && addMember?.push(newLoggedInUser));
+    addMember?.map((member) => (team += member.email + "-"));
+    const assignedTeam = team?.slice(0, team.length - 1);
 
-    //add to db
-
+    //add to teams
     addTeam({
       user: myEmail,
       data: {
@@ -96,8 +111,35 @@ const AddTeamModal = ({ open, control }) => {
         assigned: assignedTeam,
         dept: dept.label,
         title,
-        members: addMember !== [] ? addMember : [newLoggedInUser],
+        members: addMember,
         timestamp: moment().format("MMM Do YY"),
+      },
+    });
+
+    setTitle("");
+  };
+
+  // submit to projects db
+  const handleProjectSubmit = (e) => {
+    e.preventDefault();
+
+    // url query calculation
+    let team = "";
+    const allMembers = addMember && addMember?.push(loggedInUser);
+    setAddMember(allMembers);
+    addMember?.map((member) => (team += member.email + "-"));
+    const assignedTeam = team?.slice(0, team.length - 1);
+
+    addProject({
+      user: myEmail,
+      data: {
+        creator: loggedInUser,
+        assigned: assignedTeam,
+        dept: dept.label,
+        state: "backlog",
+        title,
+        date: moment().format("MMM Do YY"),
+        timestamp: new Date().getTime(),
       },
     });
 
@@ -112,14 +154,34 @@ const AddTeamModal = ({ open, control }) => {
           className="fixed w-full h-full inset-0 z-10 bg-black/50 cursor-pointer"
         ></div>
         <div className="rounded w-[400px] lg:w-[600px] space-y-8 bg-white p-10 absolute top-1/2 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2">
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create New Team
-          </h2>
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {endpoint === "teams" ? (
+            <h2 className="text-center text-3xl font-bold text-gray-900">
+              Create New Team
+            </h2>
+          ) : (
+            <h2 className="text-center text-3xl font-bold text-gray-900">
+              Create New Project
+            </h2>
+          )}
+          {endpoint === "teams" ? (
+            <p className=" bg-yellow-400 font-serif italic font-medium inline-block px-3 py-1 text-black rounded-full mx-auto">
+              Team Creator: {name}
+            </p>
+          ) : (
+            <p className=" bg-yellow-400 font-serif italic font-medium inline-block px-3 py-1 text-black rounded-full mx-auto">
+              Project Creator: {name}
+            </p>
+          )}
+          <form
+            className=" space-y-6"
+            onSubmit={
+              endpoint === "teams" ? handleTeamSubmit : handleProjectSubmit
+            }
+          >
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
                 <p className="mb-1 font-semibold text-lg">
-                  Choose Department <span>&#42;</span>
+                  Choose Team <span>&#42;</span>
                 </p>
 
                 <Select
@@ -161,14 +223,14 @@ const AddTeamModal = ({ open, control }) => {
               <button
                 type="submit"
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500"
-                // disabled={
-
-                // }
+                disabled={isTeamLoading || isProjectLoading}
               >
                 Create Team
               </button>
             </div>
-            {isError && <Error message={error} />}
+            {(isTeamError || isProjectError) && (
+              <Error message="Something went wrong" />
+            )}
           </form>
         </div>
       </>
@@ -176,4 +238,4 @@ const AddTeamModal = ({ open, control }) => {
   );
 };
 
-export default AddTeamModal;
+export default AddModal;

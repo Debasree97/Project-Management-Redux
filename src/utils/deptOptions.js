@@ -2,31 +2,31 @@ export const deptOptions = [
   {
     value: "dev",
     label: "Dev",
-    color: "#FF9494",
+    color: "#21B20C",
   },
   {
     value: "design",
     label: "Design",
-    color: "#FF8AAE",
+    color: "#1974D2",
   },
   {
     value: "copyright",
     label: "Copyright",
-    color: "#54BAB9",
+    color: "#F54E3B",
   },
   {
     value: "ui/ux",
     label: "UI/UX",
-    color: "#1572A1",
+    color: "#A71A92",
   },
   {
     value: "marketing",
     label: "Marketing",
-    color: "#3A6351",
+    color: "#FF007F",
   },
   {
     value: "social Media",
     label: "Social media",
-    color: "#B983FF",
+    color: "#FFAA1D",
   },
 ];

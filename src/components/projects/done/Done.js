@@ -1,17 +1,32 @@
 import React from "react";
+import AvatarGroup from "react-avatar-group";
+import { deptOptions } from "../../../utils/deptOptions";
 
-const Done = () => {
+const Done = ({ project }) => {
+  const { creator, dept, title, date } = project;
+  const { name } = creator;
+
+  let findColor = undefined;
+  findColor =
+    dept !== undefined &&
+    deptOptions.find(
+      (deptColor) => deptColor.value.toLowerCase() === dept.toLowerCase()
+    );
   return (
     <div
       className="relative flex flex-col items-start p-4 mt-3 bg-white rounded-lg cursor-pointer bg-opacity-90 group hover:bg-opacity-100"
       draggable="true"
     >
-      <span className="flex items-center h-6 px-3 text-xs font-semibold text-yellow-500 bg-yellow-100 rounded-full">
-        Copywriting
+      <span
+        style={{
+          backgroundColor: `${findColor.color}30`,
+          color: `${findColor.color}`,
+        }}
+        className="flex items-center h-6 px-3 text-xs font-semibold text-yellow-500 bg-yellow-100 rounded-full"
+      >
+        {dept}
       </span>
-      <h4 className="mt-3 text-sm font-medium">
-        This is the title of the card for the thing that needs to be done.
-      </h4>
+      <h4 className="mt-3 text-sm font-medium">{title}</h4>
       <div className="flex items-center w-full mt-3 text-xs font-medium text-gray-400">
         <div className="flex items-center">
           <svg
@@ -26,14 +41,22 @@ const Done = () => {
               clipRule="evenodd"
             />
           </svg>
-          <span className="ml-1 leading-none">Dec 12</span>
+          <span className="ml-1 leading-none">{date}</span>
         </div>
 
-        <img
-          alt=""
-          className="w-6 h-6 ml-auto rounded-full"
-          src="https://randomuser.me/api/portraits/women/26.jpg"
-        />
+        <span className="ml-auto">
+          <AvatarGroup
+            avatars={[name]}
+            displayAllOnHover
+            shadow={1}
+            initialCharacters={2}
+            max={6}
+            fontSize={0.5}
+            uppercase={true}
+            bold={true}
+            tooltipArrow={true}
+          />
+        </span>
       </div>
     </div>
   );

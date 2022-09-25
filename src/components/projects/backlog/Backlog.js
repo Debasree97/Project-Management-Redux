@@ -1,27 +1,35 @@
 import React from "react";
+import AvatarGroup from "react-avatar-group";
+import { deptOptions } from "../../../utils/deptOptions";
+import DeleteProject from "../DeleteProject";
 
-const Backlog = () => {
+const Backlog = ({ project }) => {
+  const { creator, dept, title, date,id } = project;
+  const { name } = creator;
+
+  let findColor = undefined;
+  findColor =
+    dept !== undefined &&
+    deptOptions.find(
+      (deptColor) => deptColor.value.toLowerCase() === dept.toLowerCase()
+    );
+
   return (
     <div
       className="relative flex flex-col items-start p-4 mt-3 bg-white rounded-lg cursor-pointer bg-opacity-90 group hover:bg-opacity-100"
       draggable="true"
     >
-      <button className="absolute top-0 right-0 flex items-center justify-center hidden w-5 h-5 mt-3 mr-2 text-gray-500 rounded hover:bg-gray-200 hover:text-gray-700 group-hover:flex">
-        <svg
-          className="w-4 h-4 fill-current"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-        </svg>
-      </button>
-      <span className="flex items-center h-6 px-3 text-xs font-semibold text-pink-500 bg-pink-100 rounded-full">
-        Design
+      <DeleteProject id={ id} />
+      <span
+        style={{
+          backgroundColor: `${findColor.color}30`,
+          color: `${findColor.color}`,
+        }}
+        className="flex items-center h-6 px-3 text-xs font-semibold text-pink-500 bg-pink-100 rounded-full"
+      >
+        {dept}
       </span>
-      <h4 className="mt-3 text-sm font-medium">
-        This is the title of the card for the thing that needs to be done.
-      </h4>
+      <h4 className="mt-3 text-sm font-medium">{title}</h4>
       <div className="flex items-center w-full mt-3 text-xs font-medium text-gray-400">
         <div className="flex items-center">
           <svg
@@ -36,14 +44,22 @@ const Backlog = () => {
               clipRule="evenodd"
             />
           </svg>
-          <span className="ml-1 leading-none">Dec 12</span>
+          <span className="ml-1 leading-none">{date}</span>
         </div>
 
-        <img
-          alt=""
-          className="w-6 h-6 ml-auto rounded-full"
-          src="https://randomuser.me/api/portraits/women/26.jpg"
-        />
+        <span className="ml-auto">
+          <AvatarGroup
+            avatars={[name]}
+            displayAllOnHover
+            shadow={1}
+            initialCharacters={2}
+            max={6}
+            fontSize={0.5}
+            uppercase={true}
+            bold={true}
+            tooltipArrow={true}
+          />
+        </span>
       </div>
     </div>
   );

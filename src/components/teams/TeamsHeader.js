@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import AddTeamModal from "./AddTeamModal";
+import AddModal from "../AddModal";
 
 const TeamsHeader = () => {
   const [opened, setOpened] = useState(false);
@@ -26,7 +26,7 @@ const TeamsHeader = () => {
           ></path>
         </svg>
       </button>
-      <AddTeamModal open={opened} control={controlModal} />
+      <AddModal open={opened} control={controlModal} endpoint="teams" />
     </div>
   );
 };
