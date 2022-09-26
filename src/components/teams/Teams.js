@@ -1,4 +1,3 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import { useGetTeamsQuery } from "../../features/teams/teamsApi";
 import Error from "../ui/Error";

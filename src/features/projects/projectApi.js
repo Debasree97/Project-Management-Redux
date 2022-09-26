@@ -8,10 +8,6 @@ export const projectsApi = apiSlice.injectEndpoints({
       providesTags: ["Projects"],
     }),
 
-    getProject: builder.query({
-      query: (id) => `/projects/${id}`,
-    }),
-
     addProject: builder.mutation({
       query: ({ user, data }) => ({
         url: "/projects",
@@ -43,10 +39,12 @@ export const projectsApi = apiSlice.injectEndpoints({
         // optimistic cache update start
         const patchResult = dispatch(
           apiSlice.util.updateQueryData("getProjects", arg.user, (draft) => {
+            // eslint-disable-next-line eqeqeq
             const draftProject = draft.find((c) => c.id == arg.id);
-            // draftTeam.members = arg.data.members;
+            draftProject.state = arg.data.state;
           })
         );
+
         // optimistic cache update end
 
         try {
@@ -72,5 +70,4 @@ export const {
   useEditProjectMutation,
   useDeleteProjectMutation,
   useGetProjectsQuery,
-  useGetProjectQuery,
 } = projectsApi;

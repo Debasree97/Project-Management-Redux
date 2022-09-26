@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
-import makeAnimated from "react-select/animated";
 import { useAddTeamMutation } from "../features/teams/teamsApi";
 import { useGetUsersQuery } from "../features/users/usersApi";
 import { deptOptions } from "../utils/deptOptions";
@@ -80,8 +79,6 @@ const AddModal = ({ open, control, endpoint }) => {
     setAddMember(selectedOption);
   };
 
-  const animatedComponents = makeAnimated();
-
   // React-Select for Members end
 
   // submit functions
@@ -129,6 +126,7 @@ const AddModal = ({ open, control, endpoint }) => {
     setAddMember(allMembers);
     addMember?.map((member) => (team += member.email + "-"));
     const assignedTeam = team?.slice(0, team.length - 1);
+
 
     addProject({
       user: myEmail,
@@ -186,7 +184,6 @@ const AddModal = ({ open, control, endpoint }) => {
 
                 <Select
                   required
-                  components={animatedComponents}
                   options={deptOptions}
                   onChange={handleDeptSelect}
                   placeholder=""
@@ -207,9 +204,11 @@ const AddModal = ({ open, control, endpoint }) => {
                 />
               </div>
               <div>
-                <p className="mb-1 mt-4 font-semibold text-lg">Add Members</p>
+                <p className="mb-1 mt-4 font-semibold text-lg">
+                  Add Members <span>&#42;</span>
+                </p>
                 <AsyncSelect
-                  components={animatedComponents}
+                  required
                   defaultOptions={users?.length > 0 && newMemberOptions}
                   loadOptions={users?.length > 0 && loadOptions}
                   onChange={handleMemberSelect}

@@ -7,38 +7,46 @@ const initialState = {
   reviewRemaining: 0,
   blockedRemaining: 0,
   doneRemaining: 0,
+  projectId: 0,
+  projectData: {},
 };
 const projectsSlice = createSlice({
   name: "projects",
   initialState,
   reducers: {
-    backlogCount: (state, action) => {
-      state.backlogRemaining = action.payload;
+    RemainingCount: (state, action) => {
+      if (action.payload !== undefined) {
+        state.backlogRemaining = action.payload.filter(
+          (project) => project.state === "backlog"
+        ).length;
+        state.backlogRemaining = action.payload.filter(
+          (project) => project.state === "backlog"
+        ).length;
+        state.readyRemaining = action.payload.filter(
+          (project) => project.state === "ready"
+        ).length;
+        state.doingRemaining = action.payload.filter(
+          (project) => project.state === "doing"
+        ).length;
+        state.reviewRemaining = action.payload.filter(
+          (project) => project.state === "review"
+        ).length;
+        state.blockedRemaining = action.payload.filter(
+          (project) => project.state === "blocked"
+        ).length;
+        state.doneRemaining = action.payload.filter(
+          (project) => project.state === "done"
+        ).length;
+      }
+      
     },
-    readyCount: (state, action) => {
-      state.readyRemaining = action.payload;
-    },
-    doingCount: (state, action) => {
-      state.doingRemaining = action.payload;
-    },
-    reviewCount: (state, action) => {
-      state.reviewRemaining = action.payload;
-    },
-    blockedCount: (state, action) => {
-      state.blockedRemaining = action.payload;
-    },
-    doneCount: (state, action) => {
-      state.doneRemaining = action.payload;
+
+    getProject: (state, action) => {
+      state.projectId = action.payload.id;
+      state.projectData = action.payload.project;
     },
   },
 });
 
-export const {
-  backlogCount,
-  readyCount,
-  doingCount,
-  reviewCount,
-  blockedCount,
-  doneCount,
-} = projectsSlice.actions;
+export const { getProject, RemainingCount } = projectsSlice.actions;
 export default projectsSlice.reducer;

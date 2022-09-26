@@ -1,6 +1,5 @@
 import React from "react";
 import AsyncSelect from "react-select/async";
-import makeAnimated from "react-select/animated";
 import {
   useEditTeamMutation,
   useGetTeamQuery,
@@ -15,7 +14,7 @@ const EditMembers = ({ id }) => {
   const [editTeam, { isError, isSuccess }] = useEditTeamMutation();
   const { data: users } = useGetUsersQuery();
   const { data } = useGetTeamQuery(id) || {};
-  const { creator,members, dept, title, timestamp, assigned } = data || {};
+  const { creator, members, dept, title, timestamp, assigned } = data || {};
 
   const { user: loggedInUser } = useSelector((state) => state.auth) || {};
   const { email: myEmail } = loggedInUser || {};
@@ -64,12 +63,12 @@ const EditMembers = ({ id }) => {
     let newTeam = "";
     editMembers.map((member) => (newTeam += "-" + member.email));
     const newAssigned = assigned + newTeam;
-    
+
     editTeam({
       id,
       data: {
         creator,
-        assigned:newAssigned,
+        assigned: newAssigned,
         dept,
         title,
         members: [...members, ...editMembers],
@@ -79,6 +78,17 @@ const EditMembers = ({ id }) => {
     });
   };
 
+  // react select style
+
+  const customStyles = {
+    container: (provided, state) => ({
+      ...provided,
+      color: state.isSelected ? "red" : "black",
+      fontSize: "12px",
+      width:"100%"
+    }),
+  };
+
   useEffect(() => {
     if (isSuccess) {
       const isEditMember = false;
@@ -86,29 +96,28 @@ const EditMembers = ({ id }) => {
     }
   }, [isSuccess, dispatch, id]);
 
-  const animatedComponents = makeAnimated();
-
   return (
-    <div>
-      <div className="flex justify-between my-3">
-        <p className="mr-3 font-semibold">Add Members: </p>
+    <>
+      <div className="flex md:flex-col justify-between my-3  w-full">
+        <AsyncSelect
+          styles={customStyles}
+          required
+          defaultOptions={users?.length > 0 && newMembers}
+          loadOptions={users?.length > 0 && loadOptions}
+          onChange={handleMemberSelect}
+          isMulti
+          placeholder="Add Member"
+        />
         <button
           onClick={handleEdit}
-          className="bg-indigo-500 text-white rounded-md px-4 py-1 text-center"
+          className="bg-indigo-500 text-sm md:text:md text-white rounded-md px-4 md:py-1 text-center ml-3 md:ml-0 md:mt-1"
         >
           Add
         </button>
       </div>
-      <AsyncSelect
-        required
-        components={animatedComponents}
-        defaultOptions={users?.length > 0 && newMembers}
-        loadOptions={users?.length > 0 && loadOptions}
-        onChange={handleMemberSelect}
-        isMulti
-      />
+
       {isError && <p>something went wrong</p>}
-    </div>
+    </>
   );
 };
 

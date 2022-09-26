@@ -25,7 +25,7 @@ const TeamMembers = ({ members, id }) => {
           />
         ))}
       </span>
-      <div>{isEditMembers && id === editId && <EditMembers id={editId} />}</div>
+      {isEditMembers && id === editId && <EditMembers id={editId} />}
     </>
   );
 };

@@ -15,6 +15,6 @@ const teamsSlice = createSlice({
   },
 });
 
-// eslint-disable-next-line no-empty-pattern
+
 export const { isEdit } = teamsSlice.actions;
 export default teamsSlice.reducer;

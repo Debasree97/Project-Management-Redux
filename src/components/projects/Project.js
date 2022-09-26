@@ -1,11 +1,19 @@
-import React from "react";
 import AvatarGroup from "react-avatar-group";
-import { deptOptions } from "../../../utils/deptOptions";
-import DeleteProject from "../DeleteProject";
+import { deptOptions } from "../../utils/deptOptions";
+import DeleteProject from "./DeleteProject";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import {getProject } from "../../features/projects/projectsSlice";
 
-const Backlog = ({ project }) => {
-  const { creator, dept, title, date,id } = project;
+const Project = ({ project, column, forwardedRef, provided, snapshot }) => {
+  const { creator, dept, title, date, id } = project;
   const { name } = creator;
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    snapshot.isDragging && id !== 0 && dispatch(getProject({id,project}));
+  }, [id, dispatch, snapshot.isDragging,project]);
 
   let findColor = undefined;
   findColor =
@@ -14,12 +22,26 @@ const Backlog = ({ project }) => {
       (deptColor) => deptColor.value.toLowerCase() === dept.toLowerCase()
     );
 
+  const { searchInTitle } = useSelector((state) => state.filter);
+
   return (
     <div
-      className="relative flex flex-col items-start p-4 mt-3 bg-white rounded-lg cursor-pointer bg-opacity-90 group hover:bg-opacity-100"
-      draggable="true"
+      {...provided.draggableProps}
+      {...provided.dragHandleProps}
+      ref={forwardedRef}
+      style={{
+        userSelect: "none",
+        backgroundColor: snapshot.isDragging && "#fae8ff",
+        ...provided.draggableProps.style,
+      }}
+      className={`relative flex flex-col items-start p-4 mt-3  rounded-lg cursor-pointer bg-opacity-90 group hover:bg-opacity-100 ${
+        searchInTitle &&
+        title.toLowerCase().includes(searchInTitle.toLowerCase())
+          ? "bg-fuchsia-50 text-fuchsia-500"
+          : "bg-white text-black"
+      }`}
     >
-      <DeleteProject id={ id} />
+      {column.col === "Backlog" && <DeleteProject id={id} />}
       <span
         style={{
           backgroundColor: `${findColor.color}30`,
@@ -29,6 +51,7 @@ const Backlog = ({ project }) => {
       >
         {dept}
       </span>
+
       <h4 className="mt-3 text-sm font-medium">{title}</h4>
       <div className="flex items-center w-full mt-3 text-xs font-medium text-gray-400">
         <div className="flex items-center">
@@ -65,4 +88,4 @@ const Backlog = ({ project }) => {
   );
 };
 
-export default Backlog;
+export default Project;
