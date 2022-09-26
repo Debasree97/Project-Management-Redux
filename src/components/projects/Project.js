@@ -3,17 +3,20 @@ import { deptOptions } from "../../utils/deptOptions";
 import DeleteProject from "./DeleteProject";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
-import {getProject } from "../../features/projects/projectsSlice";
+import { getProject } from "../../features/projects/projectsSlice";
 
 const Project = ({ project, column, forwardedRef, provided, snapshot }) => {
   const { creator, dept, title, date, id } = project;
   const { name } = creator;
 
+  const { user } = useSelector((state) => state.auth) || {};
+  const { email: myEmail } = user || {};
+
   const dispatch = useDispatch();
 
   useEffect(() => {
-    snapshot.isDragging && id !== 0 && dispatch(getProject({id,project}));
-  }, [id, dispatch, snapshot.isDragging,project]);
+    snapshot.isDragging && id !== 0 && dispatch(getProject({ id, project }));
+  }, [id, dispatch, snapshot.isDragging, project]);
 
   let findColor = undefined;
   findColor =
@@ -41,7 +44,7 @@ const Project = ({ project, column, forwardedRef, provided, snapshot }) => {
           : "bg-white text-black"
       }`}
     >
-      {column.col === "Backlog" && <DeleteProject id={id} />}
+      {column.col === "Backlog" && creator.email===myEmail && <DeleteProject id={id} />}
       <span
         style={{
           backgroundColor: `${findColor.color}30`,
