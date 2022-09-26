@@ -18,6 +18,7 @@ const Project = ({ project, column, forwardedRef, provided, snapshot }) => {
     snapshot.isDragging && id !== 0 && dispatch(getProject({ id, project }));
   }, [id, dispatch, snapshot.isDragging, project]);
 
+  // color of team
   let findColor = undefined;
   findColor =
     dept !== undefined &&
